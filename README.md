@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This program uses VTube Studio's RTX tracking to provide tracking to VTubeStudio via the iFacialMocap protocol
+This program uses VTube Studio's RTX tracking to provide tracking to VSeeFace via the iFacialMocap protocol
 
 ## Features
 
