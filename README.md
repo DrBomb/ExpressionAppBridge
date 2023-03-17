@@ -21,11 +21,34 @@ Download it from the official website and make sure it is installed to your PATH
 
 ## Usage
 
+First download the repo, you can use git or just download it whole from github directly.
+
+You will need to install Python 3.11, make sure you've checked "Add Python to PATH".
+
+Before starting the program, you will need to do make some changes on the config file `config.json`.
+
+The camera selection is on the `camera` line as a number. Choose the camera to be used, usually 0 if you don't have any other camera.
+
+Also you might need to change the resolution and fps settings. They are at the `res` and `fps` lines, `res` is a string so keep it wrapped in quotes. You can see an example at the end of this section. At this moment the program cannot check what the camera supports. You could check on VSeeFace to see which resolutions your camera can handle and set those.
+
+The program will also need the path of the VTube Studio RTX dlc folder. The folder is called "MXTracker" and it should be in the following path:
+
+`<VTUBESTUDIOPATH>\VTube Studio_Data\StreamingAssets\MXTracker`
+
+The crucial part on the directory, due to how JSON handles backslashes, **YOU WILL HAVE TO PUT TWO BACKSLASHES FOR EVERY SINGLE ONE**. Otherwise the path will not work!
+
+So, the first part of your config should look something like this:
+
+```
+    "camera": 0,
+    "res": "1280x720",
+    "fps": 30,
+    "expapp_dir": "D:\\SteamLibrary\\steamapps\\common\\VTube Studio\\VTube Studio_Data\\StreamingAssets\\MXTracker",
+```
+
 To run the program, navigate to the ExpressionAppBridge folder and run the main file. `python main.py`. Then go to VSeeFace, disable face tracking if you have it enabled and enable "ARKit Tracking Receiver" with "iFacialMocap" as the tracking app.
 
 To exit, press CTRL + C on the Command Prompt window
-
-On that same folder you will find the config file `config.json` and the calibration file `ExpApp_Cal.json` if a calibration had been done before
 
 ### Command line parameters
 
@@ -35,6 +58,17 @@ There are a few flags you can pass before starting the software
  * `--debug-expapp` will enable ExpressionApp printing to console
  * `--debug-param params` params should be a comma separated list of terms, those parameters will get printed to console. It needs some work.
  * `--cal` will force a calibration call regardless if the cal file is present
+
+### Black screen issues
+
+In case the ExpressionApp opens but there is no face looking at you, there are a few things you can check.
+
+ * Make sure you've selected the correct camera
+ * Make sure the camera is not  in use already
+ * A black screen will also stay until you come in frame
+ * If you are certain it is the correct camera, you can check to see what ExpressionApp is telling you regarding your camera. Run the program with the debug-expapp flag: `python main.py --debug-expapp` and it should give you a bunch of info and at some point a line that reads `Final camera configuration` with a resolution and FPS, that should work.
+
+Of course, if you're still having issues you can contact me over discord and I can point you on the right direction.
 
 ### Calibration
 
@@ -46,12 +80,14 @@ The config file is stored in `config.json`. It has a few fields. Here's a rough 
 
 ```
 {
-    "camera": 0,     // Camera number. Starts from 0
-    "ifm": {         // iFM sender settings. In case you need to send it somewhere else. It will default to these values
+    "camera": 0,                    CAMERA SELECTION
+    "res": "1280x720",              CAMERA RESOLUTION
+    "fps": 30,                      CAMERA FPS
+    "expapp_dir": "",               MXTRACKER LOCATION
+    "ifm": {                        SENDER ADDRESS AND PORT
         "addr": "127.0.0.1",
         "port": 49983
     },
-    "expapp_dir": "", // REQUIRED. ExpressionApp directory location. It should be inside your VTubeStudio dir at "VTube Studio_Data\StreamingAssets\MXTracker"
     "calibration": {  
         "eyes": {     // Eyes calibration. Full scale is the max input and maxRotation is the max deflection for both left and right eyes
             "left": {
@@ -91,7 +127,6 @@ The config file is stored in `config.json`. It has a few fields. Here's a rough 
         }
     }
 }
-
 ```
 
 #### Blendshape configs
@@ -159,4 +194,8 @@ Depends on how well or not this program runs, some are good to have but not crit
 You can follow me on my personal twitter [@Dr_Bomb](https://twitter.com/Dr_Bomb) and you can also follow my VTuber twitter account [TsukinoYueVT](https://twitter.com/TsukinoYueVT) as I plan to start streaming too!
 
 I do not possess a perfect sync avatar, so my streams might not even benefit from this program just yet lol. You can also DM me if you wanna donate something.
+
+## Contact
+
+You can write to me at my twitter handles. I also lurk a lot on Deat's discord on the VSeeFace channel. You can check on the VSeeFace website and find the discord link there.
 

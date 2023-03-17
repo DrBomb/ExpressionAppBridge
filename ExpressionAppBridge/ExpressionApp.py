@@ -125,6 +125,10 @@ async def start_ExpressionApp(config, onMessage, cal):
     # Get the camera to be used
     camera = config.get('camera', 0)
     
+    # Camera settings
+    res = config.get('res', "1280x720")
+    fps = config.get('res', "30")
+    
     # Open the cal file
     cal_file = loadCal()
     # Concat all cal coefficients with a semicolon
@@ -135,12 +139,12 @@ async def start_ExpressionApp(config, onMessage, cal):
         "--show=True",
         "--landmarks=True",
         f"--model_path={config['expapp_dir']}\models",
-        "--cam_res=1280x720",
+        f"--cam_res={res}",
         "--expr_mode=2",
         f"--camera={camera}",
         "--camera_cap=0",
-        "--cam_fps=30",
-        "--fps_limit=30",
+        f"--cam_fps={fps}",
+        f"--fps_limit={fps}",
         "--use_opencl=False",
         "--cam_api=0"
     ]

@@ -1,10 +1,12 @@
 {
     "camera": 0,
+    "res": "1280x720",
+    "fps": 30,
+    "expapp_dir": "D:\\SteamLibrary\\steamapps\\common\\VTube Studio\\VTube Studio_Data\\StreamingAssets\\MXTracker",
     "ifm": {
         "addr": "127.0.0.1",
         "port": 49983
     },
-    "expapp_dir": "D:\\SteamLibrary\\steamapps\\common\\VTube Studio\\VTube Studio_Data\\StreamingAssets\\MXTracker",
     "calibration": {
         "eyes": {
             "left": {
