@@ -127,7 +127,7 @@ async def start_ExpressionApp(config, onMessage, cal):
     
     # Camera settings
     res = config.get('res', "1280x720")
-    fps = config.get('res', "30")
+    fps = config.get('fps', "30")
     
     # Open the cal file
     cal_file = loadCal()
