@@ -1,16 +1,16 @@
 import asyncio, signal, functools, json, argparse
-from ExpressionApp import start_ExpressionApp
-from iFM import iFM_Data, start_iFM_Sender
-from tracking_data import TrackingData
-from ExpToPerfSync import ExpToPerfSync
-from config_utils import loadConfig, config_file_refresher, debug_settings
+from ExpressionAppBridge.ExpressionApp import start_ExpressionApp
+from ExpressionAppBridge.iFM import iFM_Data, start_iFM_Sender
+from ExpressionAppBridge.tracking_data import TrackingData
+from ExpressionAppBridge.ExpToPerfSync import ExpToPerfSync
+from ExpressionAppBridge.config_utils import loadConfig, config_file_refresher, debug_settings
 
 def sig_handler(stop_event, signum, frame):
     stop_event.set()
 
 async def main(args):
     # Load and validate config
-    config = loadConfig('./config.json')
+    config = loadConfig('ExpressionAppBridge\config.json')
     
     # Set up tracking storage
     tdata = TrackingData()
@@ -21,7 +21,7 @@ async def main(args):
     # Set up parser
     parser = ExpToPerfSync(config, tdata, disable_head_pos=True)
     
-    await asyncio.gather(start_ExpressionApp(config, parser.parseExpressionAppMessage, args.cal), start_iFM_Sender(config['iFM']['addr'], config['iFM']['port'], iFM), config_file_refresher('./config.json', config))
+    await asyncio.gather(start_ExpressionApp(config, parser.parseExpressionAppMessage, args.cal), start_iFM_Sender(config['iFM']['addr'], config['iFM']['port'], iFM), config_file_refresher('ExpressionAppBridge\config.json', config))
 
 
 

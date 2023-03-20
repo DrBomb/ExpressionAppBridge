@@ -1,48 +1,49 @@
 {
-    "camera": 0,
-    "res": "1280x720",
-    "fps": 30,
-    "expapp_dir": "D:\\SteamLibrary\\steamapps\\common\\VTube Studio\\VTube Studio_Data\\StreamingAssets\\MXTracker",
-    "ifm": {
-        "addr": "127.0.0.1",
-        "port": 49983
+  "camera": 0,
+  "res": "1280x720",
+  "fps": 30,
+  "cam_cap": 0,
+  "expapp_dir": "D:\\SteamLibrary\\steamapps\\common\\VTube Studio\\VTube Studio_Data\\StreamingAssets\\MXTracker",
+  "iFM": {
+    "port": 49983,
+    "addr": "127.0.0.1"
+  },
+  "calibration": {
+    "eyes": {
+      "left": {
+        "maxRotation": 80,
+        "fullScale": 80
+      },
+      "right": {
+        "maxRotation": 80,
+        "fullScale": 80
+      }
     },
-    "calibration": {
-        "eyes": {
-            "left": {
-                "maxRotation": 80,
-                "fullScale": 80
-            },
-            "right": {
-                "maxRotation": 80,
-                "fullScale": 80
-            }
-        },
-        "blendshapes": {
-            "eyeBlink_L": {
-                "type": "outputSnap",
-                "limit": 60
-            },
-            "eyeBlink_R": {
-                "type": "outputSnap",
-                "limit": 60
-            },
-            "browDown_L": {
-                "type": "simple",
-                "max": 50
-            },
-            "browDown_R": {
-                "type": "simple",
-                "max": 50
-            },
-            "mouthLeft": {
-                "type": "simple",
-                "max": 50
-            },
-            "mouthRight": {
-                "type": "simple",
-                "max": 50
-            }
-        }
+    "blendshapes": {
+      "eyeBlink_L": {
+        "type": "outputSnap",
+        "limit": 60
+      },
+      "eyeBlink_R": {
+        "type": "outputSnap",
+        "limit": 60
+      },
+      "browDown_L": {
+        "type": "simple",
+        "max": 50
+      },
+      "browDown_R": {
+        "type": "simple",
+        "max": 50
+      },
+      "mouthLeft": {
+        "type": "simple",
+        "max": 50
+      },
+      "mouthRight": {
+        "type": "simple",
+        "max": 50
+      }
     }
+  }
 }

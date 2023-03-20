@@ -12,6 +12,7 @@ This program uses VTube Studio's RTX tracking to provide tracking to VSeeFace vi
  * Stops sending tracking data when confidence value is low
  * Blendshape calibration via config file
  * Internal averaging for position and rotation values
+ * Config script to help with the confusing camera config
  
 ## Requirements
 
@@ -25,28 +26,21 @@ First download the repo, you can use git or just download it whole from github d
 
 You will need to install Python 3.11, make sure you've checked "Add Python to PATH".
 
-Before starting the program, you will need to do make some changes on the config file `config.json`.
+Most of the configs for ExpressionApp path and camera reside on the `config.json` file.
 
-The camera selection is on the `camera` line as a number. Choose the camera to be used, usually 0 if you don't have any other camera.
+You can run the `config.py` script and it will help you set:
 
-Also you might need to change the resolution and fps settings. They are at the `res` and `fps` lines, `res` is a string so keep it wrapped in quotes. You can see an example at the end of this section. At this moment the program cannot check what the camera supports. You could check on VSeeFace to see which resolutions your camera can handle and set those.
+ * The ExpressionApp path. It won't accept it if it does not find the ExpressionApp.exe file
+ * Camera selection. Cameras are identified by a number. You most likely will use 0.
+ * Camera res selection. First time you run this, the program will scan the camera for all the capture resolutions it can handle. This will open and close the ExpressionApp multiple times while it probes. **It is not efficient, but gets the job done**.
 
-The program will also need the path of the VTube Studio RTX dlc folder. The folder is called "MXTracker" and it should be in the following path:
+Seems like the capture options that read "YUY2" are slower than "MJPEG".
 
-`<VTUBESTUDIOPATH>\VTube Studio_Data\StreamingAssets\MXTracker`
+After setting up the path, and selecting camera and capture size, you can run the program by running the `main.py` file.
 
-The crucial part on the directory, due to how JSON handles backslashes, **YOU WILL HAVE TO PUT TWO BACKSLASHES FOR EVERY SINGLE ONE**. Otherwise the path will not work!
+`python main.py`
 
-So, the first part of your config should look something like this:
-
-```
-    "camera": 0,
-    "res": "1280x720",
-    "fps": 30,
-    "expapp_dir": "D:\\SteamLibrary\\steamapps\\common\\VTube Studio\\VTube Studio_Data\\StreamingAssets\\MXTracker",
-```
-
-To run the program, navigate to the ExpressionAppBridge folder and run the main file. `python main.py`. Then go to VSeeFace, disable face tracking if you have it enabled and enable "ARKit Tracking Receiver" with "iFacialMocap" as the tracking app.
+Then go to VSeeFace, disable face tracking if you have it enabled and enable "ARKit Tracking Receiver" with "iFacialMocap" as the tracking app.
 
 To exit, press CTRL + C on the Command Prompt window
 

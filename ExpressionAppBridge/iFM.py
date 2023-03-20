@@ -9,7 +9,7 @@ start_iFM_Sender is a asyncio coroutine that will send the data at FREQ frequenc
 '''
 
 import asyncio
-from config_utils import debug_settings
+from .config_utils import debug_settings
 FREQ = 60
 
 class iFM_Data:

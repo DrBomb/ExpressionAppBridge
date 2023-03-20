@@ -7,9 +7,9 @@ Takes care or receving the message callbacks from ExpressionApp, calulating eye 
 applying any calibration present in the config file.
 '''
 import json
-from quaternion import euler_from_quaternion
-from ExpressionApp import EXP_IDX_TO_PERFECT_SYNC, saveCal
-from config_utils import doCal, debug_settings
+from .quaternion import euler_from_quaternion
+from .ExpressionApp import EXP_IDX_TO_PERFECT_SYNC, saveCal
+from .config_utils import doCal, debug_settings
 from math import sqrt
 
 AVG_SIZE = 5

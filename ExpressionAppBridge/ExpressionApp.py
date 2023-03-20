@@ -9,7 +9,7 @@ start_ExpressionApp is an asyncio coroutine that will start the ExpressionApp bi
 '''
 
 import asyncio, os, json, subprocess
-from config_utils import debug_settings
+from .config_utils import debug_settings
 
 EXP_IDX_TO_PERFECT_SYNC = [
     "browDown_L",         # 0
@@ -67,7 +67,7 @@ EXP_IDX_TO_PERFECT_SYNC = [
     "noseSneer_R"         # 52
 ]
 
-CAL_FILENAME = "ExpApp_Cal.json"
+CAL_FILENAME = "ExpressionAppBridge\ExpApp_Cal.json"
 CAL_DELAY = 10
 
 def saveCal(cal):
@@ -128,6 +128,7 @@ async def start_ExpressionApp(config, onMessage, cal):
     # Camera settings
     res = config.get('res', "1280x720")
     fps = config.get('fps', "30")
+    cam_cap = config.get('cam_cap', 0)
     
     # Open the cal file
     cal_file = loadCal()
@@ -142,7 +143,7 @@ async def start_ExpressionApp(config, onMessage, cal):
         f"--cam_res={res}",
         "--expr_mode=2",
         f"--camera={camera}",
-        "--camera_cap=0",
+        f"--camera_cap={cam_cap}",
         f"--cam_fps={fps}",
         f"--fps_limit={fps}",
         "--use_opencl=False",
