@@ -1,8 +1,6 @@
 import subprocess, re, os, json
 from ExpressionAppBridge.config_utils import loadConfig
 
-CAMERAINFO_FILE = "CameraInfo.json"
-
 success_match = re.compile(r"Final camera configuration: (\d+)x(\d+) (\d+)")
 
 color_space_match = re.compile(r"Color space: (\w+ \(\d+\))")
