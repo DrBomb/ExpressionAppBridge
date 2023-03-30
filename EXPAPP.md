@@ -2,12 +2,12 @@
  * ExpressionApp.exe is the executable invoked by VTube Studio.
  * The binary seems to be a modification of Nvidia's sample ExpressionApp, most likely the network interface was added, also it seems like keyboard control was stripped from it. This is the version it seems to be based on https://github.com/NVIDIA/MAXINE-AR-SDK/blob/cf68600c4f4da81425f8a7e706951fbb681d0e2f/samples/ExpressionApp/ExpressionApp.cpp
  * The binary dir contains a `models` folder with a bunch of files that I guess are the AI models.
- * The app sends UDP packets to localhost at port 9140 with a JSON format.
- * It seems to be sending to multiple ports, from 9140 to 9145
+ * The app sends UDP packets to localhost ports 9140 to 9045 with a JSON format.
+ * It seems to bind to port 9160 + camera number for receiving commands.
  * VTube Studio has a calibration button. At this path `<VTubeStudioDir>\VTube Studio_Data\StreamingAssets\Config\webcam_calibration_mx.json` there is a config json that contains the resulting callibration values. Values are passed as arguments to the binary.
  * Calibration can be set on runtime, the window can be hidden as well
  * Seems like all features detected on ExpressionApp are based on Perfect Sync blendshapes.
- * The binary has a `--help` flag but there is still too little information.
+ * The binary has a `--help` flag but some flags will not work as they're patched out.
 
 ## Starting ExpressionApp
 
@@ -15,7 +15,7 @@ To start ExpressionApp open a command line prompt inside its folder located at `
 
 `ExpressionApp.exe --show=True --landmarks=True --model_path=.\models --cam_res=1280x720 --expr_mode=2 --camera=0 --camera_cap=0 --cam_fps=30 --fps_limit=30 --use_opencl=False --cam_api=0`
 
-This is how VTube Studio opens the program.
+This is how VTube Studio opens the program. camera_cap describes a specific mode the camera supports. Although you need to also put the resolution and FPS the cap corresponds to. The flag `--print_caps` can give you a list.
 
 ## Tracking JSON format
  * Packets sent via UDP, the app will send them even if there is no receiver
@@ -35,7 +35,7 @@ This is how VTube Studio opens the program.
 
 ## Control JSON format
 
-The app listens to UDP port 9160
+The app listens to UDP port 9160 + camera number
 
 ### Landmark window control
 

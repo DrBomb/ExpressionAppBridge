@@ -1,17 +1,11 @@
 import asyncio, signal, functools, json, argparse
-from ExpressionAppBridge.ExpressionApp import start_ExpressionApp
+from ExpressionAppBridge.ExpressionApp import start_ExpressionApp, setup
 from ExpressionAppBridge.iFM import iFM_Data, start_iFM_Sender
 from ExpressionAppBridge.tracking_data import TrackingData
 from ExpressionAppBridge.ExpToPerfSync import ExpToPerfSync
-from ExpressionAppBridge.config_utils import loadConfig, config_file_refresher, debug_settings
+from ExpressionAppBridge.config_utils import loadConfig, debug_settings
 
-def sig_handler(stop_event, signum, frame):
-    stop_event.set()
-
-async def main(args):
-    # Load and validate config
-    config = loadConfig('ExpressionAppBridge\config.json')
-    
+async def main(args, config, camera_conf):
     # Set up tracking storage
     tdata = TrackingData()
     
@@ -19,9 +13,17 @@ async def main(args):
     iFM = iFM_Data(tdata)
     
     # Set up parser
-    parser = ExpToPerfSync(config, tdata, disable_head_pos=True)
+    parser = ExpToPerfSync(tdata)
     
-    await asyncio.gather(start_ExpressionApp(config, parser.parseExpressionAppMessage, args.cal), start_iFM_Sender(config['iFM']['addr'], config['iFM']['port'], iFM), config_file_refresher('ExpressionAppBridge\config.json', config))
+    async with asyncio.TaskGroup() as tg:
+        # Start blendshape config file watcher
+        watcher_task = tg.create_task(parser.start_config_watcher())
+        
+        # Start ExpressionApp
+        ExpresssionApp_task = tg.create_task(start_ExpressionApp(config, camera_conf, parser.parseExpressionAppMessage, args.cal))
+        
+        # Start iFM sender
+        iFM_Sender_task = tg.create_task(start_iFM_Sender(iFM))
 
 
 
@@ -41,9 +43,15 @@ if __name__ == "__main__":
     debug_settings['debug_param'] = args.debug_param.split(',') if args.debug_param is not None else []
     debug_settings['debug_expapp'] = args.debug_expapp
     
+    # Load config file.
+    config = loadConfig()
+    
+    # Test the ExpressionApp path, ask for camera settings
+    camera_conf = setup(config)
+    
     with asyncio.Runner() as runner:
         try:
-            runner.run(main(args))
+            runner.run(main(args, config, camera_conf))
         except KeyboardInterrupt:
             pass
         runner.run(asyncio.sleep(0.5))

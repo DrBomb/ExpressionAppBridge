@@ -11,6 +11,8 @@ start_iFM_Sender is a asyncio coroutine that will send the data at FREQ frequenc
 import asyncio
 from .config_utils import debug_settings
 FREQ = 60
+IFM_ADDR = "127.0.0.1"
+IFM_PORT = 49983
 
 class iFM_Data:
     def __init__(self, tracking_data):
@@ -47,13 +49,13 @@ class IFM_Sender_Protocol:
         # Ignore unreachable destinations
         pass
 
-async def start_iFM_Sender(addr, port, iFM):
+async def start_iFM_Sender(iFM):
     """Start iFM sender. Rate is set to FREQ"""
     print("Setting up iFM sender", flush=True)
     loop = asyncio.get_running_loop()
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: IFM_Sender_Protocol(),
-        remote_addr=(addr, port))
+        remote_addr=(IFM_ADDR, IFM_PORT))
     try:
         while True:
             # Send data if tracking_data.confidence is greater than 25

@@ -12,7 +12,6 @@ This program uses VTube Studio's RTX tracking to provide tracking to VSeeFace vi
  * Stops sending tracking data when confidence value is low
  * Blendshape calibration via config file
  * Internal averaging for position and rotation values
- * Config script to help with the confusing camera config
  
 ## Requirements
 
@@ -26,21 +25,15 @@ First download the repo, you can use git or just download it whole from github d
 
 You will need to install Python 3.11, make sure you've checked "Add Python to PATH".
 
-Most of the configs for ExpressionApp path and camera reside on the `config.json` file.
+Run the main file with `python main.py` it will ask you:
 
-You can run the `config.py` script and it will help you set:
+ * The ExpressionApp path if ExpressionApp is not found on the `config.json` file
+ * The camera to use.
+ * The camera mode to use. MJPEG codecs seem to be faster.
 
- * The ExpressionApp path. It won't accept it if it does not find the ExpressionApp.exe file
- * Camera selection. Cameras are identified by a number. You most likely will use 0.
- * Camera res selection. First time you run this, the program will scan the camera for all the capture resolutions it can handle. This will open and close the ExpressionApp multiple times while it probes. **It is not efficient, but gets the job done**.
+After selecting them, the program should start tracking.
 
-Seems like the capture options that read "YUY2" are slower than "MJPEG".
-
-After setting up the path, and selecting camera and capture size, you can run the program by running the `main.py` file.
-
-`python main.py`
-
-Then go to VSeeFace, disable face tracking if you have it enabled and enable "ARKit Tracking Receiver" with "iFacialMocap" as the tracking app.
+Go to VSeeFace, disable face tracking if you have it enabled and enable "ARKit Tracking Receiver" with "iFacialMocap" as the tracking app.
 
 To exit, press CTRL + C on the Command Prompt window
 
@@ -48,7 +41,7 @@ To exit, press CTRL + C on the Command Prompt window
 
 There are a few flags you can pass before starting the software
 
- * `--debug-ifm` will print the iFM frame
+ * `--debug-ifm` will print the iFM frame to console
  * `--debug-expapp` will enable ExpressionApp printing to console
  * `--debug-param params` params should be a comma separated list of terms, those parameters will get printed to console. It needs some work.
  * `--cal` will force a calibration call regardless if the cal file is present
@@ -57,69 +50,58 @@ There are a few flags you can pass before starting the software
 
 In case the ExpressionApp opens but there is no face looking at you, there are a few things you can check.
 
- * Make sure you've selected the correct camera
- * Make sure the camera is not  in use already
- * A black screen will also stay until you come in frame
- * If you are certain it is the correct camera, you can check to see what ExpressionApp is telling you regarding your camera. Run the program with the debug-expapp flag: `python main.py --debug-expapp` and it should give you a bunch of info and at some point a line that reads `Final camera configuration` with a resolution and FPS, that should work.
+ * Make sure you've selected the correct camera.
+ * Make sure the camera is not  in use already.
+ * A black screen will also stay until you come in frame.
 
 Of course, if you're still having issues you can contact me over discord and I can point you on the right direction.
 
 ### Calibration
 
-The calibration file is stored in `ExpApp_Cal.json`. If the file is missing, the program will wait 10 seconds and will trigger a calibration on the RTX tracking app. The resulting calibration will be stored on the file to be passed next time the program is started. Use the `--cal` flag to calibrate on every startup.
+The calibration file is stored in `ExpressionAppBridge\ExpApp_Cal.json`. If the file is missing, the program will wait 10 seconds and will trigger a calibration on the RTX tracking app. The resulting calibration will be stored on the file to be passed next time the program is started. Use the `--cal` flag to calibrate on every startup.
 
-### Config file
+### Blendshape Config
 
-The config file is stored in `config.json`. It has a few fields. Here's a rough reference. There is also a .sample file for you to use in case it is lost.
+The config file is stored in `ExpressionAppBridge\BSCal.json`. Here's the default contents:
 
 ```
 {
-    "camera": 0,                    CAMERA SELECTION
-    "res": "1280x720",              CAMERA RESOLUTION
-    "fps": 30,                      CAMERA FPS
-    "expapp_dir": "",               MXTRACKER LOCATION
-    "ifm": {                        SENDER ADDRESS AND PORT
-        "addr": "127.0.0.1",
-        "port": 49983
+  "eyes": {
+    "left": {
+      "maxRotation": 30,
+      "fullScale": 80
     },
-    "calibration": {  
-        "eyes": {     // Eyes calibration. Full scale is the max input and maxRotation is the max deflection for both left and right eyes
-            "left": {
-                "maxRotation": 80,
-                "fullScale": 80
-            },
-            "right": {
-                "maxRotation": 80,
-                "fullScale": 80
-            }
-        },
-        "blendshapes": {   // Blendshape calibrations for better expressions
-            "eyeBlink_L": {
-                "type": "outputSnap",
-                "limit": 60
-            },
-            "eyeBlink_R": {
-                "type": "outputSnap",
-                "limit": 60
-            },
-            "browDown_L": {
-                "type": "simple",
-                "max": 50
-            },
-            "browDown_R": {
-                "type": "simple",
-                "max": 50
-            },
-            "mouthLeft": {
-                "type": "simple",
-                "max": 50
-            },
-            "mouthRight": {
-                "type": "simple",
-                "max": 50
-            }
-        }
+    "right": {
+      "maxRotation": 30,
+      "fullScale": 80
     }
+  },
+  "blendshapes": {
+    "eyeBlink_L": {
+      "type": "outputSnap",
+      "limit": 60
+    },
+    "eyeBlink_R": {
+      "type": "outputSnap",
+      "limit": 60
+    },
+    "browDown_L": {
+      "type": "simple",
+      "max": 50
+    },
+    "browDown_R": {
+      "type": "simple",
+      "max": 50
+    },
+    "mouthLeft": {
+      "type": "simple",
+      "max": 50
+    },
+    "mouthRight": {
+      "type": "simple",
+      "max": 50
+    }
+  }
 }
 ```
 

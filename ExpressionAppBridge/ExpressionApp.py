@@ -9,7 +9,7 @@ start_ExpressionApp is an asyncio coroutine that will start the ExpressionApp bi
 '''
 
 import asyncio, os, json, subprocess
-from .config_utils import debug_settings
+from .config_utils import debug_settings, saveConfig
 
 EXP_IDX_TO_PERFECT_SYNC = [
     "browDown_L",         # 0
@@ -104,31 +104,119 @@ class ExpressionAppSendProtocol:
         transport.sendto(self.message)
         transport.close()
 
-async def sendCommand(payload):
+async def sendCommand(payload, port):
     loop = asyncio.get_running_loop()
-    return await loop.create_datagram_endpoint(lambda: ExpressionAppSendProtocol(payload), remote_addr=('127.0.0.1', 9160))
+    return await loop.create_datagram_endpoint(lambda: ExpressionAppSendProtocol(payload), remote_addr=('127.0.0.1', port))
 
-async def expAppCal():
+async def expAppCal(camera):
     print(f"Waiting {CAL_DELAY} seconds for callib")
     try:
         await asyncio.sleep(CAL_DELAY)
     except asyncio.CancelledError:
         return
     try:
-        transport, protocol = await sendCommand('{"cmd":" calibrate"}'.encode())
+        transport, protocol = await sendCommand('{"cmd":" calibrate"}'.encode(), 9160 + camera)
     except asyncio.CancelledError:
         await transport.close()
 
-async def start_ExpressionApp(config, onMessage, cal):
+def formatStr(format_number):
+    formats = dict([
+        (0, "Any"),
+        (1, "Unknown"),
+        (100, "ARGB"),
+        (101, "XRGB"),
+        (102, "RGB24"),
+        (200, "I420"),
+        (201, "NV12"),
+        (202, "YV12"),
+        (203, "Y800"),
+        (204, "P010"),
+        (300, "YVYU"),
+        (301, "YUY2"),
+        (302, "UYVY"),
+        (303, "HDYC"),
+        (400, "MJPEG"),
+        (401, "H264"),
+        (402, "HEVC"),
+    ])
+    
+    try:
+        return formats[format_number]
+    except KeyError:
+        return formats[1]
+
+def setup(config):
+    save_config = False
+    
+    # Check for ExpressionApp.exe
+    ExpAppPathInput = config.get('expapp_dir', "")
+    while True:
+        if not os.path.isfile(os.path.join(ExpAppPathInput, "ExpressionApp.exe")):
+            save_config = True
+            if ExpAppPathInput == "":
+                print("There is no path set!")
+            else:
+                print(f"Path {ExpAppPathInput} does not contain ExpressionApp.exe!")
+            print(f"Please input the path where ExpressionApp is located:")
+            ExpAppPathInput = input("->").strip()
+        else:
+            print("ExpressionApp.exe found")
+            break
+    
+    if save_config:
+        config['expapp_dir'] = ExpAppPathInput
+        saveConfig(config)
+    
+    run_parameters = [
+        f"{ExpAppPathInput}\ExpressionApp.exe",
+        "--print_caps"
+    ]
+    
+    result = subprocess.run(run_parameters, capture_output=True)
+    
+    data = json.loads(result.stdout.decode().split("\r\n\r\n\r\n")[1])
+    
+    print("Available cameras")
+    for c in data:
+        print(f"{c['id']} - {c['name']}")
+    
+    print("Select a camera")
+    while True:
+        try:
+            camera = int(input("->"))
+            if camera >= 0 and camera < len(data):
+                break
+            print("Please select a number corresponding to a camera")
+        except ValueError:
+            print("Please select a number corresponding to a camera")
+    
+    print("Available camera modes")
+    for i, c in enumerate(data[camera]['caps']):
+        fps = int((1/(c['minInterval'])) * 10000000)
+        codec = formatStr(c['format'])
+        print(f"{i} - {c['maxCX']}x{c['maxCY']}@{fps} {codec}({c['format']})")
+    
+    print("Select a camera mode")
+    while True:
+        try:
+            camera_cap = int(input('->'))
+            if camera_cap >= 0 and camera_cap < len(data[camera]['caps']):
+                break
+            print("Please select a number corresponding a camera mode")
+        except ValueError:
+            print("Please select a number corresponding a camera mode")
+    
+    camera_conf = {
+        "camera": camera,
+        "cap": data[camera]['caps'][camera_cap]['id'],
+        "res": f"{data[camera]['caps'][camera_cap]['maxCX']}x{data[camera]['caps'][camera_cap]['maxCY']}",
+        "fps": int((1/(data[camera]['caps'][camera_cap]['minInterval'])) * 10000000)
+    }
+    
+    return camera_conf
+
+async def start_ExpressionApp(config, camera_config, onMessage, cal):
     """Start nvidia ExpressionApp and start the UDP listener to receive the parameters"""
-    
-    # Get the camera to be used
-    camera = config.get('camera', 0)
-    
-    # Camera settings
-    res = config.get('res', "1280x720")
-    fps = config.get('fps', "30")
-    cam_cap = config.get('cam_cap', 0)
     
     # Open the cal file
     cal_file = loadCal()
@@ -140,12 +228,12 @@ async def start_ExpressionApp(config, onMessage, cal):
         "--show=True",
         "--landmarks=True",
         f"--model_path={config['expapp_dir']}\models",
-        f"--cam_res={res}",
+        f"--cam_res={camera_config['res']}",
         "--expr_mode=2",
-        f"--camera={camera}",
-        f"--camera_cap={cam_cap}",
-        f"--cam_fps={fps}",
-        f"--fps_limit={fps}",
+        f"--camera={camera_config['camera']}",
+        f"--camera_cap={camera_config['cap']}",
+        f"--cam_fps={camera_config['fps']}",
+        f"--fps_limit={camera_config['fps']}",
         "--use_opencl=False",
         "--cam_api=0"
     ]
@@ -166,7 +254,7 @@ async def start_ExpressionApp(config, onMessage, cal):
         
         # Request calibration if cal file is missing
         if len(cal_file) < 1 or cal:
-            asyncio.create_task(expAppCal())
+            asyncio.create_task(expAppCal(camera_config['camera']))
         
         while True:
             await asyncio.sleep(0.1)

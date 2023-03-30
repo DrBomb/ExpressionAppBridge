@@ -1,0 +1,38 @@
+{
+  "eyes": {
+    "left": {
+      "maxRotation": 30,
+      "fullScale": 80
+    },
+    "right": {
+      "maxRotation": 30,
+      "fullScale": 80
+    }
+  },
+  "blendshapes": {
+    "eyeBlink_L": {
+      "type": "outputSnap",
+      "limit": 60
+    },
+    "eyeBlink_R": {
+      "type": "outputSnap",
+      "limit": 60
+    },
+    "browDown_L": {
+      "type": "simple",
+      "max": 50
+    },
+    "browDown_R": {
+      "type": "simple",
+      "max": 50
+    },
+    "mouthLeft": {
+      "type": "simple",
+      "max": 50
+    },
+    "mouthRight": {
+      "type": "simple",
+      "max": 50
+    }
+  }
+}
