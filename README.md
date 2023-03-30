@@ -107,7 +107,7 @@ The config file is stored in `ExpressionAppBridge\BSCal.json`. Here's the defaul
 
 #### Blendshape configs
 
-Each ARKit blendshape can be interpolated between multiple modes. The input will be the blendshape input received from the ExpressionApp, and the output is the value sent to VTubeStudio
+Each ARKit blendshape can be interpolated between multiple modes. The input will be the blendshape input received from the ExpressionApp, and the output is the value sent to VSeeFace
 
 On the blendshape config, the key corresponds to the ARKit blendshape input. Inside the object, you will need to specify the kind of interpolation you want on that blendshape, with the type there are some required parameters the object will need to have in order to apply the interpolation. The program will ignore and print out if there are malformed interpolation entries.
 
