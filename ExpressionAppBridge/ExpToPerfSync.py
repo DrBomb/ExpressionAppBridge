@@ -196,7 +196,7 @@ class ExpToPerfSync:
         """Calculate rotation values from stored blendshapes. Rotations are in degrees. No Up/Down rotation set."""
         
         # Left Eye parameters
-        leftEye = self.tracking_data.blendshapes['eyeLookout_L'] - self.tracking_data.blendshapes['eyeLookout_R']
+        leftEye = self.tracking_data.blendshapes['eyeLookOut_L'] - self.tracking_data.blendshapes['eyeLookIn_L']
         leftEyeFullScale = self.config['eyes']['left']['fullScale']
         leftEyeMaxRotation = self.config['eyes']['left']['maxRotation']
         
@@ -211,7 +211,7 @@ class ExpToPerfSync:
         
         
         # Right Eye parameters
-        rightEye = self.tracking_data.blendshapes['eyeLookIn_R'] - self.tracking_data.blendshapes['eyeLookout_R']
+        rightEye = self.tracking_data.blendshapes['eyeLookIn_R'] - self.tracking_data.blendshapes['eyeLookOut_R']
         rightEyeFullScale = self.config['eyes']['right']['fullScale']
         rightEyeMaxRotation = self.config['eyes']['right']['maxRotation']
         

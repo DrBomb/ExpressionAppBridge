@@ -21,7 +21,7 @@ class TrackingData:
             "eyeLookDown_R": 0,
             "eyeLookIn_L": 0,
             "eyeLookIn_R": 0,
-            "eyeLookout_L": 0,
+            "eyeLookOut_L": 0,
             "eyeLookOut_R": 0,
             "eyeBlink_L": 0,
             "eyeBlink_R": 0,

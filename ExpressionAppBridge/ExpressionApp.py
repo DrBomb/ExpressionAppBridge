@@ -28,8 +28,8 @@ EXP_IDX_TO_PERFECT_SYNC = [
     "eyeLookDown_R",      # 13
     "eyeLookIn_L",        # 14
     "eyeLookIn_R",        # 15
-    "eyeLookout_L",       # 16
-    "eyeLookout_R",       # 17
+    "eyeLookOut_L",       # 16
+    "eyeLookOut_R",       # 17
     "eyeLookUp_L",        # 18
     "eyeLookUp_R",        # 19
     "eyeSquint_L",        # 20
