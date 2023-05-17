@@ -1,6 +1,6 @@
 import unittest, json, os
 from tempfile import NamedTemporaryFile
-from ExpressionAppBridge import ExpToPerfSync
+from ExpressionAppBridge import cal
 from ExpressionAppBridge.tracking_data import TrackingData
 
 class TestConfigParser(unittest.TestCase):
@@ -12,11 +12,10 @@ class TestConfigParser(unittest.TestCase):
         # Create temp file, delete it right away and save its route
         tempfile = NamedTemporaryFile(delete=False)
         tempfile.close()
-        ExpToPerfSync.BS_CONFIG_FILEPATH = tempfile.name
         os.remove(tempfile.name)
         
         # Create new instance
-        instance = ExpToPerfSync.ExpToPerfSync(self.td)
+        instance = cal.TrackingInput(self.td, tempfile.name)
         
         # Expected output
         exp_config = {
@@ -52,10 +51,9 @@ class TestConfigParser(unittest.TestCase):
         # Create temp file, close and save its route
         tempfile = NamedTemporaryFile(delete=False)
         tempfile.close()
-        ExpToPerfSync.BS_CONFIG_FILEPATH = tempfile.name
         
         # Create new instance
-        instance = ExpToPerfSync.ExpToPerfSync(self.td)
+        instance = cal.TrackingInput(self.td, tempfile.name)
         
         # Expected output
         exp_config = {
@@ -128,10 +126,9 @@ class TestConfigParser(unittest.TestCase):
         tempfile = NamedTemporaryFile(delete=False, mode='w')
         json.dump(cal_in, tempfile)
         tempfile.close()
-        ExpToPerfSync.BS_CONFIG_FILEPATH = tempfile.name
         
         # Create new instance
-        instance = ExpToPerfSync.ExpToPerfSync(self.td)
+        instance = cal.TrackingInput(self.td, tempfile.name)
         
         # Check config result
         self.assertEqual(instance.config, cal_out)
@@ -174,10 +171,9 @@ class TestConfigParser(unittest.TestCase):
         tempfile = NamedTemporaryFile(delete=False, mode='w')
         json.dump(cal_in, tempfile)
         tempfile.close()
-        ExpToPerfSync.BS_CONFIG_FILEPATH = tempfile.name
         
         # Create new instance
-        instance = ExpToPerfSync.ExpToPerfSync(self.td)
+        instance = cal.TrackingInput(self.td, tempfile.name)
         
         # Check config result
         self.assertEqual(instance.config, cal_out)
@@ -222,10 +218,9 @@ class TestConfigParser(unittest.TestCase):
         tempfile = NamedTemporaryFile(delete=False, mode='w')
         json.dump(cal_in, tempfile)
         tempfile.close()
-        ExpToPerfSync.BS_CONFIG_FILEPATH = tempfile.name
         
         # Create new instance
-        instance = ExpToPerfSync.ExpToPerfSync(self.td)
+        instance = cal.TrackingInput(self.td, tempfile.name)
         
         # Check config result
         self.assertEqual(instance.config, cal_in)
@@ -315,10 +310,9 @@ class TestConfigParser(unittest.TestCase):
         tempfile = NamedTemporaryFile(delete=False, mode='w')
         json.dump(cal_in, tempfile)
         tempfile.close()
-        ExpToPerfSync.BS_CONFIG_FILEPATH = tempfile.name
         
         # Create new instance
-        instance = ExpToPerfSync.ExpToPerfSync(self.td)
+        instance = cal.TrackingInput(self.td, tempfile.name)
         
         # Check config result
         self.assertEqual(instance.config, cal_out)
@@ -389,10 +383,9 @@ class TestConfigParser(unittest.TestCase):
         tempfile = NamedTemporaryFile(delete=False, mode='w')
         json.dump(cal_in, tempfile)
         tempfile.close()
-        ExpToPerfSync.BS_CONFIG_FILEPATH = tempfile.name
         
         # Create new instance
-        instance = ExpToPerfSync.ExpToPerfSync(self.td)
+        instance = cal.TrackingInput(self.td, tempfile.name)
         
         # Check config result
         self.assertEqual(instance.config, cal_out)

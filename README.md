@@ -58,11 +58,11 @@ Of course, if you're still having issues you can contact me over discord and I c
 
 ### Calibration
 
-The calibration file is stored in `ExpressionAppBridge\ExpApp_Cal.json`. If the file is missing, the program will wait 10 seconds and will trigger a calibration on the RTX tracking app. The resulting calibration will be stored on the file to be passed next time the program is started. Use the `--cal` flag to calibrate on every startup.
+The calibration file is stored in `config\RTX_cal_coeffs.json`. If the file is missing, the program will wait 10 seconds and will trigger a calibration on the RTX tracking app. The resulting calibration will be stored on the file to be passed next time the program is started. Use the `--cal` flag to calibrate on every startup.
 
 ### Blendshape Config
 
-The config file is stored in `ExpressionAppBridge\BSCal.json`. Here's the default contents:
+The config file is stored in `config\RTX_Blendshapes_cal.json`. Here's the default contents:
 
 ```
 {

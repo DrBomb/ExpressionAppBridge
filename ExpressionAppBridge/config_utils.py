@@ -1,6 +1,6 @@
 import json, os, asyncio
 
-CONFIG_FILEPATH = os.path.join(os.path.dirname(__file__), "config.json")
+CONFIG_FILEPATH = "config\config.json"
 
 # Some debug flags
 debug_settings = {

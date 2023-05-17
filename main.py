@@ -1,9 +1,9 @@
 import asyncio, signal, functools, json, argparse
-from ExpressionAppBridge.ExpressionApp import start_ExpressionApp, setup
+from ExpressionAppBridge.rtxtracking.ExpressionApp import ExpressionAppRunner, setup
 from ExpressionAppBridge.iFM import iFM_Data, start_iFM_Sender
 from ExpressionAppBridge.tracking_data import TrackingData
-from ExpressionAppBridge.ExpToPerfSync import ExpToPerfSync
 from ExpressionAppBridge.config_utils import loadConfig, debug_settings
+from ExpressionAppBridge.cal import TrackingInput, debug_entries
 
 async def main(args, config, camera_conf):
     # Set up tracking storage
@@ -12,15 +12,16 @@ async def main(args, config, camera_conf):
     # Set up iFM serializer
     iFM = iFM_Data(tdata)
     
-    # Set up parser
-    parser = ExpToPerfSync(tdata)
+    # Set up calibration
+    cal = TrackingInput(tdata, "config/RTX_Blendshapes_cal.json")
+    
+    # Set up ExpressionApp
+    expapp = ExpressionAppRunner(cal, config, camera_conf)
     
     async with asyncio.TaskGroup() as tg:
-        # Start blendshape config file watcher
-        watcher_task = tg.create_task(parser.start_config_watcher())
         
         # Start ExpressionApp
-        ExpresssionApp_task = tg.create_task(start_ExpressionApp(config, camera_conf, parser.parseExpressionAppMessage, args.cal))
+        ExpresssionApp_task = tg.create_task(expapp.start(args.cal))
         
         # Start iFM sender
         iFM_Sender_task = tg.create_task(start_iFM_Sender(iFM))
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     
     # Load command line args to debug struct
     debug_settings['debug_ifm'] = args.debug_ifm
-    debug_settings['debug_param'] = args.debug_param.split(',') if args.debug_param is not None else []
+    debug_entries = args.debug_param.split(',') if args.debug_param is not None else []
     debug_settings['debug_expapp'] = args.debug_expapp
     
     # Load config file.
