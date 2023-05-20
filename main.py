@@ -18,15 +18,8 @@ async def main(args, config, camera_conf):
     # Set up ExpressionApp
     expapp = ExpressionAppRunner(cal, config, camera_conf)
     
-    async with asyncio.TaskGroup() as tg:
-        
-        # Start ExpressionApp
-        ExpresssionApp_task = tg.create_task(expapp.start(args.cal))
-        
-        # Start iFM sender
-        iFM_Sender_task = tg.create_task(start_iFM_Sender(iFM))
-
-
+    # Run ExpressionApp and iFM sender
+    await asyncio.gather(expapp.start(args.cal), start_iFM_Sender(iFM))
 
 if __name__ == "__main__":
     # Command line stuff
@@ -50,9 +43,7 @@ if __name__ == "__main__":
     # Test the ExpressionApp path, ask for camera settings
     camera_conf = setup(config)
     
-    with asyncio.Runner() as runner:
-        try:
-            runner.run(main(args, config, camera_conf))
-        except KeyboardInterrupt:
-            pass
-        runner.run(asyncio.sleep(0.5))
+    try:
+        asyncio.run(main(args, config, camera_conf))
+    except KeyboardInterrupt:
+        pass
