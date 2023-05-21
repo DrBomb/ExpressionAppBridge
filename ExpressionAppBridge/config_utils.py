@@ -1,6 +1,6 @@
 import json, os, asyncio
 
-CONFIG_FILEPATH = "config\config.json"
+CONFIG_FILEPATH = "config/RTX_path.json"
 
 # Some debug flags
 debug_settings = {

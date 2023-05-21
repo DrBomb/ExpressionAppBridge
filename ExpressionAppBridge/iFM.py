@@ -8,7 +8,7 @@ iFM_Data is a class that can serialize a tracking_data object.
 start_iFM_Sender is a asyncio coroutine that will send the data at FREQ frequency
 '''
 
-import asyncio
+import asyncio, socket
 from .config_utils import debug_settings
 FREQ = 60
 IFM_ADDR = "127.0.0.1"
@@ -20,6 +20,8 @@ class iFM_Data:
         self.head_enable = True
         self.rightEye_enable = True
         self.leftEye_enable = True
+        self.sock = socket.socket(socket.AF_INET, # Internet
+            socket.SOCK_DGRAM) # UDP
     def __str__(self):
         """Serialize tracking_data according to the iFaceMocap format"""
         
@@ -36,6 +38,13 @@ class iFM_Data:
         # Closing
         output = output + "|"
         return output
+    def udp_send(self):
+        # Send data if tracking_data.confidence is greater than 25
+        if self.tracking_data.confidence > 25:
+            payload = str(self)
+            if debug_settings['debug_ifm']:
+                print(payload)
+            self.sock.sendto(payload.encode(), (IFM_ADDR, IFM_PORT))
 
 class IFM_Sender_Protocol:
     def __init__(self):

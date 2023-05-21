@@ -70,7 +70,7 @@ EXP_IDX_TO_PERFECT_SYNC = [
     "noseSneer_R"         # 52
 ]
 
-CAL_FILENAME = "config\RTX_cal_coeffs.json"
+CAL_FILENAME = "config/RTX_internal_cal.json"
 CAL_DELAY = 10
 
 # UDP Expressionapp protocol

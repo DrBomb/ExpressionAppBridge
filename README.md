@@ -2,67 +2,86 @@
 
 ## Purpose
 
-This program uses VTube Studio's RTX tracking to provide tracking to VSeeFace via the iFacialMocap protocol
+This program can provide iFacialMocap tracking data using either VTube Studio's RTX tracking or Google's mediapipe framework for use on VTubing applications such as VSeeFace or VNyan.
 
 ## Features
 
- * Opens and closes RTX tracking without opening VTube Studio
- * Outputs all ARTracking blendshapes sans "tongueOut" with varying levels of accuracy
+ * Supports opening and closing the RTX Tracking package that comes bundled with VTube Studio RTX Tracking DLC
+ * Supports Google's mediapipe facial landmark detection
+ * Outputs iFacialMocap data to localhost at 49983 port
  * Rotation and position tracking
- * Stops sending tracking data when confidence value is low
- * Blendshape calibration via config file
+ * Blendshape calibration for both tracking modes on separate files
  * Internal averaging for position and rotation values
- 
-## Requirements
 
-The only thing required to run this program is Python 3.11.
+## Installation
 
-Download it from the official website and make sure it is installed to your PATH
+Download the .zip file on the [releases](https://github.com/DrBomb/ExpressionAppBridge/releases) page and extract it somehere
+
+## Running/Building from source
+
+The latest Python version supported by mediapipe is 3.10.
+
+ * Clone the repo
+ * Create a new virtualenv for your project
+ * Install the dependencies
+  * `pip install mediapipe==0.10.0 transforms3d pyinstaller pygrabber`
+ * Download the Face Landmark model file from [this page](https://developers.google.com/mediapipe/solutions/vision/face_landmarker#models)
+ * Make sure the model file is called `face_landmarker.task` and on the same folder as `main.py`
+ * Run the program with `python main.py`
+ * Build the distribution package with `pyinstaller main.py --add-data config;config`
+ * Copy `face_landmarker.task` to dist/main before compressing.
 
 ## Usage
 
-First download the repo, you can use git or just download it whole from github directly.
+Run the program `main.exe` to start. This is a console program, so a console window will be opened if ran from desktop.
 
-You will need to install Python 3.11, make sure you've checked "Add Python to PATH".
+ * After running it will ask which mode to use. RTX Tracking or mediapipe tracking.
+ * RTX Tracking will first ask for the path of the VTube Studio RTX tracking DLC. Make sure `ExpressionApp.exe` is present on this path.
+  * Then you will be prompted for camera and capture format.
+  * Next thing, the ExpressionApp will run and you will see a face with the tracking effects.
+ * With mediapipe tracking, you will be prompted for camera and capture format.
+  * Afterwards, an FPS counter will be shown.
+ * Close either tracker by pressing Ctrl + C on the console
 
-Run the main file with `python main.py` it will ask you:
+## VSeeFace setup
 
- * The ExpressionApp path if ExpressionApp is not found on the `config.json` file
- * The camera to use.
- * The camera mode to use. MJPEG codecs seem to be faster.
+Refer to VSeeFace's [documentation](https://www.vseeface.icu/#iphone-face-tracking) on the iPhone section. The phone IP should be set to `127.0.0.1` which is the loopback address and the format should be `iFacialMocap`. Make sure to check the features you want received!
 
-After selecting them, the program should start tracking.
+## RTX Tracking
 
-Go to VSeeFace, disable face tracking if you have it enabled and enable "ARKit Tracking Receiver" with "iFacialMocap" as the tracking app.
+ * 51 blendshape detection. tongueOut not supported at all.
+  * puffCheeks listed as supported but not really detected
+ * Requires an RTX series Nvidia GPU
+ * Seems to be based NVidia's sample applications
+ * Adapted by VTube Studio
+ * There is a calibration procedure that will happen on first boot after 5 seconds
+  * The calibration is done by the program. The results are stored in `config/RTX_internal_cal.json` and passed on start
+  * You can force a new calibration by passing the `--cal` flag to the program or by deleting the file
 
-To exit, press CTRL + C on the Command Prompt window
+## Mediapipe Tracking
+
+ * 51 blendshape detection. tongueOut not supported.
+  * puffCheeks does not seem to be detectable as well
+ * No idea if it requires a GPU, it seems to use it anyways.
+ * Runs at ~32 FPS on my computer. No idea if it is due to my webcam or python slowdown.
+ * Model and task development seems to be on the experimental stage.
+ * Seems to be overly sensitive to mouthFunnel for some reason. Could be training bias as I am not from the USA.
 
 ### Command line parameters
 
 There are a few flags you can pass before starting the software
 
  * `--debug-ifm` will print the iFM frame to console
- * `--debug-expapp` will enable ExpressionApp printing to console
- * `--debug-param params` params should be a comma separated list of terms, those parameters will get printed to console. It needs some work.
- * `--cal` will force a calibration call regardless if the cal file is present
-
-### Black screen issues
-
-In case the ExpressionApp opens but there is no face looking at you, there are a few things you can check.
-
- * Make sure you've selected the correct camera.
- * Make sure the camera is not  in use already.
- * A black screen will also stay until you come in frame.
-
-Of course, if you're still having issues you can contact me over discord and I can point you on the right direction.
-
-### Calibration
-
-The calibration file is stored in `config\RTX_cal_coeffs.json`. If the file is missing, the program will wait 10 seconds and will trigger a calibration on the RTX tracking app. The resulting calibration will be stored on the file to be passed next time the program is started. Use the `--cal` flag to calibrate on every startup.
+ * `--debug-expapp` will enable ExpressionApp (RTX Tracking) printing to console
+ * `--cal` will force an RTX tracking calibration 5 seconds after starting tracking
 
 ### Blendshape Config
 
-The config file is stored in `config\RTX_Blendshapes_cal.json`. Here's the default contents:
+Blendshape values for both modes sometimes are not good enough to give a good VTubing impression, so there is a blendshape calibration system that provides ways to adjust the values that get sent to VSeeFace.
+
+Each mode has its own config file, `config\RTX_Blendshapes_cal.json` for RTX tracking, `Mediapipe_Blendshapes_cal.json` for Mediapipe tracking.
+
+Here's the default contents:
 
 ```
 {
@@ -107,7 +126,7 @@ The config file is stored in `config\RTX_Blendshapes_cal.json`. Here's the defau
 
 #### Blendshape configs
 
-Each ARKit blendshape can be interpolated between multiple modes. The input will be the blendshape input received from the ExpressionApp, and the output is the value sent to VSeeFace
+Each ARKit blendshape can be interpolated between multiple modes. The input will be the blendshape input received from tracking, and the output is the value sent to VSeeFace via iFm
 
 On the blendshape config, the key corresponds to the ARKit blendshape input. Inside the object, you will need to specify the kind of interpolation you want on that blendshape, with the type there are some required parameters the object will need to have in order to apply the interpolation. The program will ignore and print out if there are malformed interpolation entries.
 
@@ -155,23 +174,17 @@ Example:
 
 This example with minIn and minOut being 0 is pretty much the same as selecting a simple interpolation type.
 
-## Possible Future plans
+## Disclaimers
 
-Depends on how well or not this program runs, some are good to have but not critical.
-
- * Make the program easier to distribute with pyinstaller or something else
- * Use YAML instead of JSON for config
- * Implement an UI with buttons for calibrate and hide/show features window
- * Fork our own ExpressionApp to avoid using VTubeStudio's one
- * Stop using python and port to C++
+These tracking softwares and AI models were not developed by me. I am just making them available via the iFM protocol to be used by other programs. As such, I won't be able to help too much in regards to quality of tracking or issues resulting from training biases. Feel free to contact me though, thanks for taking a look at my work.
 
 ## Support
 
 You can follow me on my personal twitter [@Dr_Bomb](https://twitter.com/Dr_Bomb) and you can also follow my VTuber twitter account [TsukinoYueVT](https://twitter.com/TsukinoYueVT) as I plan to start streaming too!
 
-I do not possess a perfect sync avatar, so my streams might not even benefit from this program just yet lol. You can also DM me if you wanna donate something.
+I do not possess a perfect sync avatar, so my streams might not even benefit from this program just yet! But I appreciate any feedback you can give me.
 
 ## Contact
 
-You can write to me at my twitter handles. I also lurk a lot on Deat's discord on the VSeeFace channel. You can check on the VSeeFace website and find the discord link there.
+You can write to me at my twitter handles. I also lurk a lot on Deat's discord on the VSeeFace channel. You can check on the VSeeFace website and find the discord link there. I am also present on Suvidriel's discord.
 
