@@ -47,7 +47,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--camera', help="Camera index", action='store', type=int, required=platform == "linux")
     parser.add_argument('--camera-cap', help="Camera mode", action='store', type=int)
-    parser.add_argument('--mode', choices=['rtx', 'mediapipe'])
+    if platform != "linux":
+        parser.add_argument('--mode', choices=['rtx', 'mediapipe'])
     parser.add_argument('--debug-ifm', help="Print every iFM frame sent. VERY VERBOSE", action='store_true')
     parser.add_argument('--debug-expapp', help="Print tracker console output. Only for RTX", action='store_true')
     parser.add_argument('--debug-param', help="Provide a comma separated list of parameters to be printed IE. 'brow,blink'", action='store', metavar='param')
@@ -62,7 +63,10 @@ if __name__ == "__main__":
     debug_settings['debug_expapp'] = args.debug_expapp
     
     # Handle mode selection
-    mode = args.mode
+    if platform != "linux":
+        mode = args.mode
+    else:
+        mode = "mediapipe"
     
     if mode != 'rtx' and mode != 'mediapipe':
         mode = None
