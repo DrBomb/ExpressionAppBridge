@@ -1,4 +1,10 @@
-from ExpressionAppBridge.mediapipe.camera import create_camera_backend
+from sys import platform
+
+if platform == "linux":
+  import cv2
+else:
+  from ExpressionAppBridge.mediapipe.camera import create_camera_backend
+
 from ExpressionAppBridge.tracking_data import TrackingData
 
 import time, transforms3d, threading
@@ -78,7 +84,7 @@ def process_BlendShapes_into_TrackingData(Blendshapes, tracking_data):
         if C.category_name in mediapipe_to_ifm.keys():
             tracking_data.blendshapes[mediapipe_to_ifm[C.category_name]] = C.score * 100
 
-def mediapipe_start(cal, iFM):
+def mediapipe_start(cal, iFM, camera, camera_cap):
     
     # Import mediapipe
     import mediapipe as mp
@@ -115,7 +121,16 @@ def mediapipe_start(cal, iFM):
     
     with FaceLandmarker.create_from_options(options) as landmarker:
         # Create camera backend
-        cap = create_camera_backend()
+        if platform == "linux":
+            print("Using OpenCV for camera")
+            cap = cv2.VideoCapture(camera)
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            fps = int(cap.get(cv2.CAP_PROP_FPS))
+
+            print(width, height, fps)
+        else:
+            cap = create_camera_backend(camera, camera_cap)
         
         start = None
         try:
