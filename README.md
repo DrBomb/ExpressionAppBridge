@@ -24,7 +24,7 @@ The latest Python version supported by mediapipe is 3.10.
  * Clone the repo
  * Create a new virtualenv for your project
  * Install the dependencies
-  * `pip install mediapipe==0.10.0 transforms3d pyinstaller pygrabber`
+  * `pip install -r requirements.txt`
  * Download the Face Landmark model file from [this page](https://developers.google.com/mediapipe/solutions/vision/face_landmarker#models)
  * Make sure the model file is called `face_landmarker.task` and on the same folder as `main.py`
  * Run the program with `python main.py`

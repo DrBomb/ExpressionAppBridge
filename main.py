@@ -1,4 +1,5 @@
 import asyncio, signal, functools, json, argparse
+from sys import platform
 from ExpressionAppBridge.rtxtracking import ExpressionAppRunner, setup
 from ExpressionAppBridge.mediapipe import mediapipe_start
 from ExpressionAppBridge.iFM import iFM_Data, start_iFM_Sender
@@ -39,12 +40,15 @@ def mediapipe_main(args):
     cal = TrackingInput(tdata, "config/Mediapipe_Blendshapes_cal.json")
     
     # Start mediapipe main loop
-    mediapipe_start(cal, iFM)
+    mediapipe_start(cal, iFM, args.camera, args.camera_cap)
 
 if __name__ == "__main__":
     # Command line stuff
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', choices=['rtx', 'mediapipe'])
+    parser.add_argument('--camera', help="Camera index", action='store', type=int, required=platform == "linux")
+    parser.add_argument('--camera-cap', help="Camera mode", action='store', type=int)
+    if platform != "linux":
+        parser.add_argument('--mode', choices=['rtx', 'mediapipe'])
     parser.add_argument('--debug-ifm', help="Print every iFM frame sent. VERY VERBOSE", action='store_true')
     parser.add_argument('--debug-expapp', help="Print tracker console output. Only for RTX", action='store_true')
     parser.add_argument('--debug-param', help="Provide a comma separated list of parameters to be printed IE. 'brow,blink'", action='store', metavar='param')
@@ -59,9 +63,12 @@ if __name__ == "__main__":
     debug_settings['debug_expapp'] = args.debug_expapp
     
     # Handle mode selection
-    mode = args.mode
+    if platform != "linux":
+        mode = args.mode
+    else:
+        mode = "mediapipe"
     
-    if mode != 'rtx' or mode != 'mediapipe':
+    if mode != 'rtx' and mode != 'mediapipe':
         mode = None
     
     # Or ask for it if not selected
