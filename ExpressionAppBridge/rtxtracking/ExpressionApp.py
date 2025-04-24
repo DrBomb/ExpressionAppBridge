@@ -309,7 +309,7 @@ class ExpressionAppRunner:
             self.parsed_data.blendshapes[x] = convert_exp(expressions[i])
         
         # Handle 2/3 for browInner. Average them
-        self.parsed_data.blendshapes['brownInnerUp'] = (convert_exp(expressions[2]) + convert_exp(expressions[3]))/2
+        self.parsed_data.blendshapes['browInnerUp'] = (convert_exp(expressions[2]) + convert_exp(expressions[3]))/2
         
         # Handle 6/7 for cheekPuff same as browInner
         self.parsed_data.blendshapes['cheekPuff'] = (convert_exp(expressions[6]) + convert_exp(expressions[7]))/2
