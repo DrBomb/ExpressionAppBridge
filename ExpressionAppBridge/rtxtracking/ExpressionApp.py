@@ -45,7 +45,7 @@ EXP_IDX_TO_PERFECT_SYNC = [
     "jawRight",           # 27
     "mouthClose",         # 28
     "mouthDimple_L",      # 29
-    "mouthDimple_L",      # 30
+    "mouthDimple_R",      # 30
     "mouthFrown_L",       # 31
     "mouthFrown_R",       # 32
     "mouthFunnel",        # 33
